@@ -1,40 +1,74 @@
 package com.example.znews;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
-    private NavController navController;
-    private BottomNavigationView navView;
-    private AppBarConfiguration appBarConfiguration;
+    private Fragment[] fragments;
+    private int last_fragment = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        initView();
+    }
 
-        // 获取页面上的底部导航栏控件
-        navView = findViewById(R.id.nav_view);
+    private void initView () {
+        FragmentHome fragment_home = new FragmentHome();
+        FragmentSearch fragment_search = new FragmentSearch();
+        FragmentMine fragment_mine = new FragmentMine();
+        fragments = new Fragment[]{fragment_home, fragment_search, fragment_mine};
 
-        // 配置navigation与底部菜单之间的联系
-        // 底部菜单的样式里面的item里面的ID与navigation布局里面指定的ID必须相同，否则会出现绑定失败的情况
-        appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_search, R.id.navigation_mine)
-                .build();
+        getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, fragment_home).show(fragment_home).commit();
+        BottomNavigationView nav_view = findViewById(R.id.nav_view);
+        nav_view.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+    }
+
+    @SuppressLint("NonConstantResourceId")
+    private final BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = item -> {
+                switch (item.getItemId()) {
+                    case R.id.navigation_home:
+                        if (last_fragment != 0) {
+                            switchFragment(last_fragment, 0);
+                            last_fragment = 0;
+                        }
+                        return true;
+                    case R.id.navigation_search:
+                        if (last_fragment != 1) {
+                            switchFragment(last_fragment, 1);
+                            last_fragment = 1;
+                        }
+                        return true;
+                    case R.id.navigation_mine:
+                        if (last_fragment != 2) {
+                            switchFragment(last_fragment, 2);
+                            last_fragment = 2;
+                        }
+                        return true;
+                    default:
+                        break;
+                }
+                return false;
+            };
+
+    private void switchFragment (int last, int index) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.hide(fragments[last]);
+        if (!fragments[index].isAdded())
+            transaction.add(R.id.nav_host_fragment, fragments[index]);
+        transaction.show(fragments[index]).commitAllowingStateLoss();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupWithNavController(navView, navController);
     }
 }

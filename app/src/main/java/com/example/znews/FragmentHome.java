@@ -2,6 +2,8 @@ package com.example.znews;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -25,6 +28,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -73,6 +78,19 @@ public class FragmentHome extends Fragment {
                 title = "";
             }
             news_title.setText(title);
+
+//            ImageView news_pic = view.findViewById(R.id.news_pic);
+//            String picUrl = all_news.get(position).getPicUrl();
+//            Thread get_pic_thread = new Thread(() -> {
+//                Bitmap bmp = getUrlImg(picUrl);
+//                news_pic.setImageBitmap(bmp);
+//            });
+//            get_pic_thread.start();
+//            try {
+//                get_pic_thread.join();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
 
             ImageButton favor_button = view.findViewById(R.id.favor_button);
             favor_button.setOnClickListener(v -> {
@@ -232,4 +250,22 @@ public class FragmentHome extends Fragment {
         news_info_thread.join();
         return news;
     }
+
+//    private Bitmap getUrlImg (String url) {
+//        Bitmap bmp = null;
+//        try {
+//            URL myurl = new URL(url);
+//            HttpURLConnection conn = (HttpURLConnection) myurl.openConnection();
+//            conn.setConnectTimeout(3000); // 设置超时
+//            conn.setDoInput(true);
+//            conn.setUseCaches(false); // 不缓存
+//            conn.connect();
+//            InputStream is = conn.getInputStream();//获得图片的数据流
+//            bmp = BitmapFactory.decodeStream(is);
+//            is.close();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return bmp;
+//    }
 }
