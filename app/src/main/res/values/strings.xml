@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">ZNews</string>
+    <string name="nav_1">主页</string>
+    <string name="nav_2">搜索</string>
+    <string name="nav_3">我的</string>
+    <string name="mine_text">我的</string>
+    <string name="search_text">搜索</string>
+    <string name="copyright">Copyright © ZhouYan</string>
+    <string name="news_pic">news</string>
+    <string name="news_title"><font color="#000000" size="16">新闻</font></string>
+    <string name="news_des"><font color="#696969" size="14">该新闻没有描述</font></string>
+    <string name="news_content">这条新闻的内容为空</string>
+    <string name="detail_title"><font color="#000000" size="24">【清华新闻】经管八字班杨倩同学在东京奥运会获得两枚金牌！</font></string>
+    <string name="detail_content">
+        肩负首金重任，对任何一位运动员都是极大的考验，尤其是需要信心和稳定性的射击项目，丝毫的心理波动都会影响发挥。7月24日的朝霞射击场，“00后”小将杨倩最后一枪顶住压力，以251.8环射落东京奥运会首金，同时也是中国代表团本届奥运会的首枚金牌。
+
+　　2000年出生于浙江宁波，杨倩的射击生涯始于2011年，当时就读于小学4年级的她被选入宁波体校射击队，并很快展现出不俗的射击天赋。
+
+　　全国青少年锦标赛、省运会、全国青少年运动会，零基础入队的杨倩成长迅速，并在多项国内青少年比赛中崭露头角。进入清华附中马约翰特长班，被清华大学射击队特招，一步一个脚印，杨倩在2019年敲开了国家队大门。
+
+　　女子10米气步枪作为中国射击队的传统优势项目，一直担负着冲击奥运首金的重任，内部竞争激烈程度可想而知，漫长的奥运阵容选拔过程更是惨烈。虽然没有太多世界大赛的荣誉头衔，但杨倩在选拔赛中一骑绝尘。
+
+　　4站奥运选拔赛，21岁的杨倩均夺冠，并在第2站比赛打出破世界纪录的成绩，以积分第一毫无悬念地入围参赛名单。舞台来到东京奥运会的朝霞射击场，杨倩延续了本赛季的稳定表现，击败众多强敌笑到最后。
+    </string>
+    <string name="detail_pic">detail_pic</string>
+    <string name="favor">favorite</string>
+    <string name="back"><font color="#FFFFFF" size="18">返回</font></string>
+    <string name="detail_des">描述缺失</string>
+</resources>
