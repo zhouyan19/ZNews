@@ -11,23 +11,20 @@ import java.io.Serializable;
 
 public class News implements Parcelable {
     private CharSequence title;
-    private CharSequence des;
-    private CharSequence content;
+    private String url;
     private String picUrl;
     private Boolean fav;
 
     public News () {
         title = "";
-        des = "";
-        content = "";
+        url = "";
         picUrl = "";
         fav = false;
     }
 
-    public News (String _t, String _d, String _c, String _p, Boolean _f) {
+    public News (String _t, String _u, String _p, Boolean _f) {
         title = _t;
-        des = _d;
-        content = _c;
+        url = _u;
         picUrl = _p;
         fav = _f;
     }
@@ -35,21 +32,18 @@ public class News implements Parcelable {
     @RequiresApi(api = Build.VERSION_CODES.Q)
     protected News(Parcel in) {
         title = in.readString();
-        des = in.readString();
-        content = in.readString();
+        url = in.readString();
         picUrl = in.readString();
         fav = in.readBoolean();
     }
 
     CharSequence getTitle () { return title; }
-    CharSequence getDes () { return des; }
-    CharSequence getContent () { return content; }
+    String getUrl () { return url; }
     String getPicUrl () { return picUrl; }
     Boolean getFav () { return fav; }
 
     void setTitle (CharSequence _t) { title = _t; }
-    void setDes (CharSequence _d) { des = _d; }
-    void setContent (CharSequence _c) { content = _c; }
+    void setUrl (String _u) { url = _u; }
     void setPicUrl (String _p) { picUrl = _p; }
     void setFav (Boolean _f) { fav = _f; }
 
@@ -75,8 +69,7 @@ public class News implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(title.toString());
-        dest.writeString(des.toString());
-        dest.writeString(content.toString());
+        dest.writeString(url);
         dest.writeString(picUrl);
         dest.writeBoolean(fav);
     }

@@ -45,53 +45,10 @@
         android:layout_marginRight="10dp"
         tools:ignore="ScrollViewCount">
         
-        <LinearLayout
-            android:id="@+id/detail_all"
+        <WebView
+            android:id="@+id/detail_web"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/detail_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/detail_title"/>
-
-            <ImageView
-                android:id="@+id/detail_pic"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="fitXY"
-                android:adjustViewBounds="true"
-                android:layout_marginTop="10dp"
-                android:src="@mipmap/yangqian"
-                android:contentDescription="@string/detail_pic" />
-
-            <TextView
-                android:id="@+id/detail_des"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
-                android:text="@string/detail_des"/>
-
-            <TextView
-                android:id="@+id/detail_content"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:text="@string/detail_content"/>
-
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
     </ScrollView>
 

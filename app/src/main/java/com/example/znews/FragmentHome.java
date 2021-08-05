@@ -2,9 +2,6 @@ package com.example.znews;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,23 +16,25 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DecodeFormat;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.Target;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import java.io.InputStream;
-import java.net.HttpURLConnection;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class FragmentHome extends Fragment {
-
+    private int news_cnt = 0;
     protected ArrayList<News> all_news;
 
     class MyAdapter extends BaseAdapter {
@@ -79,18 +78,17 @@ public class FragmentHome extends Fragment {
             }
             news_title.setText(title);
 
-//            ImageView news_pic = view.findViewById(R.id.news_pic);
-//            String picUrl = all_news.get(position).getPicUrl();
-//            Thread get_pic_thread = new Thread(() -> {
-//                Bitmap bmp = getUrlImg(picUrl);
-//                news_pic.setImageBitmap(bmp);
-//            });
-//            get_pic_thread.start();
-//            try {
-//                get_pic_thread.join();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
+            ImageView news_pic = view.findViewById(R.id.news_pic);
+            String picUrl = all_news.get(position).getPicUrl();
+            Glide.with(view)
+                    .load(picUrl)
+                    .centerCrop()
+                    .dontTransform()
+                    .dontAnimate()
+                    .format(DecodeFormat.PREFER_ARGB_8888)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+                    .into(news_pic);
 
             ImageButton favor_button = view.findViewById(R.id.favor_button);
             favor_button.setOnClickListener(v -> {
@@ -122,13 +120,13 @@ public class FragmentHome extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         SwipeRefreshLayout srl = view.findViewById(R.id.swipe_refresh);
         srl.setColorSchemeResources(R.color.royal_blue);
         srl.setOnRefreshListener(() -> {
             try {
+                news_cnt = 0;
                 initData();
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -138,6 +136,7 @@ public class FragmentHome extends Fragment {
 
         srl.setRefreshing(true);
         try {
+            news_cnt = 0;
             initData();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -156,116 +155,62 @@ public class FragmentHome extends Fragment {
         super.onStart();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public void initData () throws InterruptedException {
         Thread net_conn_thread = new Thread(() -> {
-            ArrayList<String> url_list = getUrlList();
-            assert url_list != null;
-            if (url_list.size() == 0) {
-                // TODO
-            } else {
-                Log.e("SubThread/url_list", String.valueOf(url_list.size()));
-                try {
-                    getNews(url_list);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+            try {
+                all_news = new ArrayList<>();
+                getAllNews(0);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
         net_conn_thread.start();
         net_conn_thread.join();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public ArrayList<String> getUrlList () {
-        ArrayList<String> url_list  = new ArrayList<>();
-        String root = "https://olympics.com/tokyo-2020/zh/news/";
-        try {
-            Log.e("SubThread/getUrlList", "Trying to get the html...");
-            Document document = Jsoup.parse(new URL(root).openStream(), "UTF-8", root);
-            Log.e("SubThread/getUrlList", "Document!");
-            Elements cards_group = document.getElementsByClass("tk-cardsgroup__item-link");
-            Elements es = cards_group.select("a");
-            for (Element e : es) {
-                String s = e.attr("href");
-                Log.e("", s);
-                if (s != null) url_list.add(s);
-            }
-            for (String url : url_list) {
-                Log.e("SubThread/getUrlList", url);
-            }
-            return url_list;
-        } catch (Exception e) {
-            Log.e("SubThread/getUrlList", e.toString());
-            return new ArrayList<>();
-        }
-    }
-
-    public void getNews (ArrayList<String> url_list) throws InterruptedException {
-        all_news = new ArrayList<>();
-        for (String url : url_list) {
-            News news = getNewsInfo(url);
-            all_news.add(news);
-        }
-        Log.e("SubThread/getNews", "News got");
-    }
-
-    public News getNewsInfo (String url) throws InterruptedException {
-        News news = new News();
-        Thread news_info_thread = new Thread(() -> {
+    public void moreData(int cnt) throws InterruptedException {
+        Thread net_conn_thread = new Thread(() -> {
             try {
-                Document document = Jsoup.parse(new URL(url).openStream(), "UTF-8", url);
-                Log.e("SubSub/getNewsInfo", "Document!");
-                Elements article_title = document.getElementsByClass("tk-article__title");
-                Element title = article_title.select("h1").first();
-                news.setTitle(title.text());
-                Log.e("getNewsInfo/setTitle", title.text());
-                Elements article_des = document.getElementsByClass("tk-article__summary");
-                Element des = article_des.select("p").first();
-                news.setDes("【" + des.text() + "】");
-                Log.e("getNewsInfo/setDes", des.text());
-                Element article_content = document.getElementsByClass("tk-article__part markdown").select("div").first();
-                Log.e("(Content)", "article_content");
-                Elements paragraphs = article_content.children().select("p");
-                StringBuilder content = new StringBuilder();
-                for (Element p : paragraphs) {
-                    content.append(p.text());
-                }
-                news.setContent(content);
-                Log.e("getNewsInfo/setContent", String.valueOf(content.length()));
-                Element picture = document.getElementsByClass("tk-lead-block__picture").first();
-                Element img = picture.children().select("img").first();
-                String picUrl = img.attr("src");
-                news.setPicUrl(picUrl);
-                Log.e("getNewsInfo/setPicUrl", picUrl);
-            } catch (Exception e) {
-                Log.e("SubSub/getNewsInfo", e.toString());
-                news.setTitle("");
-                news.setContent("");
-                news.setDes("");
-                news.setPicUrl("");
+                getAllNews(cnt);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         });
-        news_info_thread.start();
-        news_info_thread.join();
-        return news;
+        net_conn_thread.start();
+        net_conn_thread.join();
     }
 
-//    private Bitmap getUrlImg (String url) {
-//        Bitmap bmp = null;
-//        try {
-//            URL myurl = new URL(url);
-//            HttpURLConnection conn = (HttpURLConnection) myurl.openConnection();
-//            conn.setConnectTimeout(3000); // 设置超时
-//            conn.setDoInput(true);
-//            conn.setUseCaches(false); // 不缓存
-//            conn.connect();
-//            InputStream is = conn.getInputStream();//获得图片的数据流
-//            bmp = BitmapFactory.decodeStream(is);
-//            is.close();
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return bmp;
-//    }
+    private void getAllNews (int cnt) throws IOException {
+        String head = "https://olympics.com/tokyo-2020/zh/library/editorial/country/all/sport/all/order/desc/skip/";
+        String tail = "/limit/10/morenews-grid";
+        String root = head + cnt + tail;
+        Log.e("SubThread/getNews", "Trying to get the html...");
+        Document document = Jsoup.parse(new URL(root).openStream(), "UTF-8", root);
+        Log.e("SubThread/getNews", "Document!");
+        Element cards_group = document.getElementsByClass("tk-cardsgroup__sequence row").select("ul").first();
+        Elements cards_items = cards_group.children().select("li");
+        for (Element i : cards_items) {
+            News news = new News();
+            try {
+                Element a = i.children().select("a").first();
+                String href = a.attr("href");
+                if (href.equals("")) continue;
+                news.setUrl(href);
+                Element article = a.children().select("article").first();
+                Element img = article.children().select("figure").first().children().select("picture").first().children().select("img").first();
+                String picUrl = img.attr("data-src");
+                if (picUrl.equals("")) continue;
+                news.setPicUrl(picUrl);
+                Element h3 = article.children().select("div").first().children().select("header").first().children().select("div").first().children().select("h3").first();
+                String title = h3.attr("title");
+                if (title.equals("")) continue;
+                news.setTitle(title);
+                all_news.add(news);
+                news_cnt++;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
